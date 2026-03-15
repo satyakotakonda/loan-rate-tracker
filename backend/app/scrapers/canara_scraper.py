@@ -7,7 +7,7 @@ from app.scrapers.base_scraper import BaseScraper
 logger = logging.getLogger(__name__)
 
 
-class CanaraScaper(BaseScraper):
+class CanaraScraper(BaseScraper):
     """Scraper for Canara Bank loan rates."""
 
     bank_name = "Canara Bank"

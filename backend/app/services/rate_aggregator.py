@@ -8,7 +8,7 @@ from app.config import settings
 from app.models.loan_rate import BestRatesResponse, LoanRate, RatesResponse
 from app.scrapers.axis_scraper import AxisScraper
 from app.scrapers.bob_scraper import BoBScraper
-from app.scrapers.canara_scraper import CanaraScaper
+from app.scrapers.canara_scraper import CanaraScraper
 from app.scrapers.hdfc_scraper import HDFCScraper
 from app.scrapers.icici_scraper import ICICIScraper
 from app.scrapers.kotak_scraper import KotakScraper
@@ -29,7 +29,7 @@ def _get_all_scrapers():
         PNBScraper(),
         KotakScraper(),
         BoBScraper(),
-        CanaraScaper(),
+        CanaraScraper(),
     ]
 
 
