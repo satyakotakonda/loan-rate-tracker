@@ -24,6 +24,10 @@ class Settings:
     # HTTP request timeout
     REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "10"))
 
+    # OpenAI LLM settings
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
     # HTTP headers for scraping
     DEFAULT_HEADERS: dict = {
         "User-Agent": (
