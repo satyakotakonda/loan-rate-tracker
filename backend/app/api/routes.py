@@ -4,12 +4,15 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 
 from app.models.loan_rate import (
+    AgentQuery,
+    AgentResponse,
     BestRatesResponse,
     EMICalculation,
     EMICalculationRequest,
     RBIBenchmark,
     RatesResponse,
 )
+from app.services.llm_extractor import query_agent
 from app.services.rate_aggregator import rate_aggregator
 from app.services.rbi_service import rbi_service
 from app.utils.helpers import calculate_emi
@@ -91,3 +94,25 @@ async def refresh_rates():
     """Force refresh of cached rates from all banks."""
     rate_aggregator.get_all_rates(force_refresh=True)
     return {"message": "Rates refreshed successfully"}
+
+
+@router.post("/agent/query", response_model=AgentResponse)
+async def agent_query(request: AgentQuery):
+    """
+    Query the LLM agent with a natural language question about loan rates.
+
+    The agent uses Google Gemini AI (or OpenAI as fallback) to answer
+    questions about Indian bank loan rates and return structured data.
+
+    Example request body:
+    ```json
+    {"query": "Which bank offers the lowest home loan interest rate and what are the details?"}
+    ```
+    """
+    try:
+        return query_agent(request)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Agent query failed: %s", exc)
+        raise HTTPException(status_code=500, detail="Agent query failed") from exc
