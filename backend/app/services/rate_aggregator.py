@@ -1,12 +1,12 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from cachetools import TTLCache
 
 from app.config import settings
-from app.models.loan_rate import BestRatesResponse, LoanRate, RatesResponse
-from app.services.llm_extractor import get_all_bank_rates
+from app.models.loan_rate import AgentQuery, AgentResponse, BestRatesResponse, LoanRate, RatesResponse
+from app.services.llm_extractor import query_agent
 
 logger = logging.getLogger(__name__)
 
@@ -14,28 +14,59 @@ _cache: TTLCache = TTLCache(maxsize=settings.CACHE_MAXSIZE, ttl=settings.CACHE_T
 
 
 class RateAggregator:
-    """Aggregates loan rates from all bank scrapers with TTL caching."""
+    """Aggregates loan rates via the LLM agent with TTL caching."""
 
     CACHE_KEY_ALL = "all_rates"
 
     def get_all_rates(self, force_refresh: bool = False) -> RatesResponse:
-        """Get all loan rates from all banks (cached)."""
+        """
+        Get all loan rates via the LLM agent (cached).
+
+        A single agent query retrieves both personal and home loan rates to
+        minimise LLM API calls.
+        """
         if not force_refresh and self.CACHE_KEY_ALL in _cache:
             logger.info("Returning cached loan rates")
             return _cache[self.CACHE_KEY_ALL]
 
-        logger.info("Fetching fresh loan rates from all banks")
+        logger.info("Fetching fresh loan rates via LLM agent")
         all_rates: list[LoanRate] = []
         try:
-            all_rates = get_all_bank_rates()
-            logger.info(f"Fetched {len(all_rates)} rates total")
+            agent_resp: AgentResponse = query_agent(
+                AgentQuery(
+                    query=(
+                        "List all major Indian banks with both personal loan and home loan "
+                        "interest rates, including processing fees"
+                    )
+                )
+            )
+            for bank in agent_resp.response.get("banks", []):
+                rate_min = float(bank.get("interest_rate_min", 0))
+                rate_max = float(bank.get("interest_rate_max", 0))
+                if rate_min <= 0:
+                    logger.warning(
+                        "Skipping %s — missing interest_rate_min from agent response",
+                        bank.get("bank_name", "unknown"),
+                    )
+                    continue
+                all_rates.append(
+                    LoanRate(
+                        bank_name=bank.get("bank_name", ""),
+                        loan_type=bank.get("loan_type", "personal"),
+                        interest_rate_min=rate_min,
+                        interest_rate_max=rate_max,
+                        processing_fee=bank.get("processing_fee"),
+                        last_updated=datetime.now(timezone.utc),
+                    )
+                )
+            logger.info("Fetched %d rates total via LLM agent", len(all_rates))
         except Exception as e:
-            logger.error(f"Error fetching bank rates: {e}")
+            logger.error("Error fetching bank rates via agent: %s", e)
 
         response = RatesResponse(
             data=all_rates,
             total=len(all_rates),
-            last_refreshed=datetime.utcnow(),
+            last_refreshed=datetime.now(timezone.utc),
         )
         _cache[self.CACHE_KEY_ALL] = response
         return response
