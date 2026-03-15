@@ -29,7 +29,7 @@ async def health_check():
 
 
 @router.get("/rates", response_model=RatesResponse)
-async def get_all_rates(
+def get_all_rates(
     loan_type: Optional[str] = Query(None, description="Filter by loan type: personal or home"),
     bank_name: Optional[str] = Query(None, description="Filter by bank name (partial match)"),
     sort_by: Optional[str] = Query("interest_rate_min", description="Sort by field"),
@@ -45,25 +45,25 @@ async def get_all_rates(
 
 
 @router.get("/rates/personal-loan", response_model=RatesResponse)
-async def get_personal_loan_rates():
+def get_personal_loan_rates():
     """Get personal loan rates from all banks, sorted by lowest rate."""
     return rate_aggregator.get_personal_loan_rates()
 
 
 @router.get("/rates/home-loan", response_model=RatesResponse)
-async def get_home_loan_rates():
+def get_home_loan_rates():
     """Get home loan rates from all banks, sorted by lowest rate."""
     return rate_aggregator.get_home_loan_rates()
 
 
 @router.get("/rates/best", response_model=BestRatesResponse)
-async def get_best_rates():
+def get_best_rates():
     """Get best (lowest) rates for each loan type across all banks."""
     return rate_aggregator.get_best_rates()
 
 
 @router.get("/rates/bank/{bank_name}", response_model=RatesResponse)
-async def get_rates_by_bank(bank_name: str):
+def get_rates_by_bank(bank_name: str):
     """Get all loan rates for a specific bank."""
     result = rate_aggregator.get_rates_by_bank(bank_name)
     if not result.data:
@@ -72,7 +72,7 @@ async def get_rates_by_bank(bank_name: str):
 
 
 @router.get("/rbi/benchmark", response_model=RBIBenchmark)
-async def get_rbi_benchmark():
+def get_rbi_benchmark():
     """Get current RBI benchmark rates (repo rate, reverse repo, bank rate, MCLR)."""
     return rbi_service.get_benchmark_rates()
 
@@ -90,14 +90,14 @@ async def calculate_emi_endpoint(request: EMICalculationRequest):
 
 
 @router.post("/rates/refresh")
-async def refresh_rates():
+def refresh_rates():
     """Force refresh of cached rates from all banks."""
     rate_aggregator.get_all_rates(force_refresh=True)
     return {"message": "Rates refreshed successfully"}
 
 
 @router.post("/agent/query", response_model=AgentResponse)
-async def agent_query(request: AgentQuery):
+def agent_query(request: AgentQuery):
     """
     Query the LLM agent with a natural language question about loan rates.
 
