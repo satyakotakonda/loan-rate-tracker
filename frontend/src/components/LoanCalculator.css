@@ -1,0 +1,149 @@
+.calculator-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e8eaf6;
+}
+
+.calculator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calc-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.calc-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #546e7a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.calc-input,
+.calc-select {
+  padding: 10px 14px;
+  border: 1.5px solid #c5cae9;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  color: #263238;
+  transition: border-color 0.18s;
+}
+
+.calc-input:focus,
+.calc-select:focus {
+  outline: none;
+  border-color: #1a237e;
+  box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+}
+
+.calc-error {
+  color: #c62828;
+  font-size: 0.85rem;
+  background: #ffebee;
+  padding: 8px 14px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.calc-btn {
+  background: #1a237e;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.18s, transform 0.1s;
+}
+
+.calc-btn:hover:not(:disabled) {
+  background: #283593;
+  transform: translateY(-1px);
+}
+
+.calc-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.calc-result {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 2px solid #e8eaf6;
+}
+
+.result-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.result-card {
+  background: #f5f7ff;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #e8eaf6;
+}
+
+.result-card.highlight {
+  background: #1a237e;
+  color: white;
+}
+
+.result-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.result-card.highlight .result-label {
+  opacity: 0.8;
+}
+
+.result-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a237e;
+}
+
+.result-card.highlight .result-value {
+  color: white;
+  font-size: 1.35rem;
+}
+
+.result-value.interest {
+  color: #c62828;
+}
+
+.pie-section {
+  text-align: center;
+}
+
+.pie-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #546e7a;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}

@@ -1,0 +1,177 @@
+.rate-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border: 1.5px solid #e8eaf6;
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.rate-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.rate-card.rate-best {
+  border-color: #43a047;
+  box-shadow: 0 2px 10px rgba(67, 160, 71, 0.15);
+}
+
+.rate-card.rate-high {
+  border-color: #e53935;
+}
+
+.rate-card.rate-average {
+  border-color: #fb8c00;
+}
+
+.rate-card-header {
+  background: linear-gradient(135deg, #1a237e, #283593);
+  color: white;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rate-card.rate-best .rate-card-header {
+  background: linear-gradient(135deg, #2e7d32, #388e3c);
+}
+
+.rate-card.rate-high .rate-card-header {
+  background: linear-gradient(135deg, #b71c1c, #c62828);
+}
+
+.rate-card.rate-average .rate-card-header {
+  background: linear-gradient(135deg, #e65100, #ef6c00);
+}
+
+.bank-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loan-icon {
+  font-size: 1.6rem;
+}
+
+.bank-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.loan-type-badge {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.rate-display {
+  text-align: right;
+}
+
+.rate-min {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.rate-sep {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.rate-max {
+  font-size: 1.1rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.rate-label {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  margin-top: 1px;
+}
+
+.rate-card-body {
+  padding: 14px 18px 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f2f8;
+  font-size: 0.82rem;
+  flex-wrap: wrap;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  margin-bottom: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detail-label {
+  font-size: 0.72rem;
+  color: #78909c;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detail-value {
+  font-size: 0.85rem;
+  color: #263238;
+  font-weight: 500;
+}
+
+.rate-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rate-type-badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.rate-type-badge.floating {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.rate-type-badge.fixed {
+  background: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.source-link {
+  font-size: 0.78rem;
+  color: #1a237e;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
