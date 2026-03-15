@@ -6,31 +6,11 @@ from cachetools import TTLCache
 
 from app.config import settings
 from app.models.loan_rate import BestRatesResponse, LoanRate, RatesResponse
-from app.scrapers.axis_scraper import AxisScraper
-from app.scrapers.bob_scraper import BoBScraper
-from app.scrapers.canara_scraper import CanaraScraper
-from app.scrapers.hdfc_scraper import HDFCScraper
-from app.scrapers.icici_scraper import ICICIScraper
-from app.scrapers.kotak_scraper import KotakScraper
-from app.scrapers.pnb_scraper import PNBScraper
-from app.scrapers.sbi_scraper import SBIScraper
+from app.services.llm_extractor import get_all_bank_rates
 
 logger = logging.getLogger(__name__)
 
 _cache: TTLCache = TTLCache(maxsize=settings.CACHE_MAXSIZE, ttl=settings.CACHE_TTL)
-
-
-def _get_all_scrapers():
-    return [
-        SBIScraper(),
-        HDFCScraper(),
-        ICICIScraper(),
-        AxisScraper(),
-        PNBScraper(),
-        KotakScraper(),
-        BoBScraper(),
-        CanaraScraper(),
-    ]
 
 
 class RateAggregator:
@@ -46,13 +26,11 @@ class RateAggregator:
 
         logger.info("Fetching fresh loan rates from all banks")
         all_rates: list[LoanRate] = []
-        for scraper in _get_all_scrapers():
-            try:
-                rates = scraper.get_all_rates()
-                all_rates.extend(rates)
-                logger.info(f"Fetched {len(rates)} rates from {scraper.bank_name}")
-            except Exception as e:
-                logger.error(f"Error with scraper {scraper.bank_name}: {e}")
+        try:
+            all_rates = get_all_bank_rates()
+            logger.info(f"Fetched {len(all_rates)} rates total")
+        except Exception as e:
+            logger.error(f"Error fetching bank rates: {e}")
 
         response = RatesResponse(
             data=all_rates,
