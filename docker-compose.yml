@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: loan-tracker-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - CACHE_TTL=1800
+      - REQUEST_TIMEOUT=10
+    networks:
+      - loan-tracker-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: loan-tracker-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - loan-tracker-net
+    restart: unless-stopped
+
+networks:
+  loan-tracker-net:
+    driver: bridge
