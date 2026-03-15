@@ -1,14 +1,17 @@
 import json
 import logging
 from datetime import datetime, timezone
-
-from google import genai
-from google.genai import types
+from typing import Any
 
 from app.config import settings
 from app.models.loan_rate import AgentQuery, AgentResponse, BankRate
 
 logger = logging.getLogger(__name__)
+
+# Module-level lazy clients; instantiated on first use so missing packages or
+# unconfigured API keys at import time do not crash the application.
+_gemini_client: Any = None
+_openai_client: Any = None
 
 _AGENT_PROMPT = """You are a financial data expert specializing in Indian bank loan rates.
 The user will ask a natural language question about loan interest rates.
@@ -77,8 +80,16 @@ def query_agent(request: AgentQuery) -> AgentResponse:
 
 def _query_gemini(query: str, prompt: str) -> AgentResponse:
     """Call Google Gemini and parse the structured JSON response."""
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    response = client.models.generate_content(
+    from google import genai  # lazy import — optional dependency
+    from google.genai import types
+
+    global _gemini_client
+    if _gemini_client is None:
+        _gemini_client = genai.Client(
+            api_key=settings.GEMINI_API_KEY,
+            http_options=types.HttpOptions(timeout=30_000),  # 30 s in milliseconds
+        )
+    response = _gemini_client.models.generate_content(
         model=settings.GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
@@ -100,8 +111,10 @@ def _query_openai(query: str, prompt: str) -> AgentResponse:
     """Call OpenAI as a fallback and parse the structured JSON response."""
     from openai import OpenAI  # imported lazily — optional dependency
 
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
-    completion = client.chat.completions.create(
+    global _openai_client
+    if _openai_client is None:
+        _openai_client = OpenAI(api_key=settings.OPENAI_API_KEY, timeout=30.0)
+    completion = _openai_client.chat.completions.create(
         model=settings.LLM_MODEL,
         messages=[{"role": "user", "content": prompt}],
         response_format={"type": "json_object"},
